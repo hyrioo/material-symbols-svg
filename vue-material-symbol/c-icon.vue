@@ -7,7 +7,7 @@
 <script setup lang="ts">
 import { computed, ref, watch } from 'vue';
 import type { Ref } from 'vue';
-import { getSymbol } from '../vite-plugin-material-symbols-svg/registry';
+import { getSymbol } from '@hyrioo/vite-plugin-material-symbols-svg';
 
 type Theme = 'rounded' | 'outlined' | 'sharp';
 

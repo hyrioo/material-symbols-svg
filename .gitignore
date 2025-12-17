@@ -34,15 +34,6 @@ node_modules/
 .pnpm-store/
 **/.pnpm-store/
 
-###############################
-# Build outputs
-###############################
-dist/
-build/
-out/
-**/dist/
-**/build/
-**/out/
 
 ###############################
 # Caches

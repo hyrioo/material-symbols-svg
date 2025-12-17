@@ -1,7 +1,7 @@
 {
   "name": "@hyrioo/vue-material-symbol",
   "version": "0.1.0",
-  "description": "Vue 3 component for Material Symbols SVG icons (uses vite-plugin registry)",
+  "description": "Vue 3 component for Material Symbols SVG icons",
   "type": "module",
   "module": "dist/index.js",
   "types": "dist/index.d.ts",
@@ -9,12 +9,6 @@
     "dist",
     "README.md"
   ],
-  "exports": {
-    ".": {
-      "types": "./dist/index.d.ts",
-      "import": "./dist/index.js"
-    }
-  },
   "engines": {
     "node": ">=18"
   },
