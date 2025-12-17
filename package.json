@@ -8,5 +8,6 @@
   "scripts": {
     "build": "yarn workspaces run build",
     "clean": "yarn workspaces run clean"
-  }
+  },
+  "version": "0.1.0"
 }
