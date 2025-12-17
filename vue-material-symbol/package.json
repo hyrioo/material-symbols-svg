@@ -1,6 +1,6 @@
 {
   "name": "@hyrioo/vue-material-symbol",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "Vue 3 component for Material Symbols SVG icons",
   "license": "MIT",
   "type": "module",

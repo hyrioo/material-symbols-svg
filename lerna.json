@@ -1,8 +1,5 @@
 {
-  "packages": [
-    "vite-plugin-material-symbols-svg",
-    "vue-material-symbol"
-  ],
-  "version": "independent",
+  "$schema": "node_modules/lerna/schemas/lerna-schema.json",
+  "version": "0.0.0",
   "npmClient": "yarn"
 }
