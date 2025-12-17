@@ -1,0 +1,12 @@
+{
+  "name": "material-symbols-svg-monorepo",
+  "private": true,
+  "workspaces": [
+    "vite-plugin-material-symbols-svg",
+    "vue-material-symbol"
+  ],
+  "scripts": {
+    "build": "yarn workspaces run build",
+    "clean": "yarn workspaces run clean"
+  }
+}
