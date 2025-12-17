@@ -1,0 +1,8 @@
+{
+  "packages": [
+    "vite-plugin-material-symbols-svg",
+    "vue-material-symbol"
+  ],
+  "version": "independent",
+  "npmClient": "yarn"
+}

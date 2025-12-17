@@ -1,13 +1,12 @@
 {
-  "name": "material-symbols-svg-monorepo",
+  "name": "material-symbols-svg",
   "private": true,
-  "workspaces": [
-    "vite-plugin-material-symbols-svg",
-    "vue-material-symbol"
-  ],
+  "version": "0.1.0",
+  "license": "MIT",
   "scripts": {
-    "build": "yarn workspaces run build",
-    "clean": "yarn workspaces run clean"
+    "build": "lerna exec --parallel -- yarn build"
   },
-  "version": "0.1.0"
+  "devDependencies": {
+    "lerna": "^9.0.3"
+  }
 }
