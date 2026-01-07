@@ -1,0 +1,16 @@
+{
+  "name": "@hyrioo/material-symbols-svg",
+  "private": true,
+  "version": "0.0.0",
+  "license": "MIT",
+  "workspaces": [
+    "vite-plugin-material-symbols-svg",
+    "vue-material-symbol"
+  ],
+  "scripts": {
+    "build": "lerna exec --parallel -- yarn build"
+  },
+  "devDependencies": {
+    "lerna": "^9.0.3"
+  }
+}

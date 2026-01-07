@@ -1,0 +1,25 @@
+services:
+  node:
+    image: node:24
+    working_dir: /var/www
+    command: tail -f /dev/null
+    volumes:
+      - ./:/var/www
+    networks:
+      - default # include any other docker networks first
+      - ingress-net # include ingress-net last
+#    labels:
+#      - "traefik.enable=true"
+#      - "traefik.docker.network=ingress-net"
+#      - "traefik.http.routers.mss-devserver.rule=Host(`dev-server.${APP_URN}`)"
+#      - "traefik.http.routers.mss-devserver.entrypoints=websecure"
+#      - "traefik.http.routers.mss-devserver.tls=true"
+#      - "traefik.http.routers.mss-devserver.tls.certresolver=default"
+#      - "traefik.http.routers.mss-devserver.service=mss-devserver"
+#      - "traefik.http.routers.mss-devserver.priority=1000"
+#      - "traefik.http.services.mss-devserver.loadbalancer.server.port=5173"
+
+networks:
+  ingress-net:
+    name: ingress-net
+    external: true
