@@ -23,22 +23,22 @@ const D = ["viewBox", "innerHTML"], L = /* @__PURE__ */ M({
     }), z = y(() => typeof e.size == "object" ? Math.max(e.size.height, e.size.width) : e.size);
     function S(n, t, r) {
       if (!n || typeof DOMParser > "u") return n;
-      const l = new DOMParser().parseFromString(`<svg xmlns="http://www.w3.org/2000/svg">${n}</svg>`, "image/svg+xml").documentElement, s = Array.from(l.children), u = (o, c, i) => {
+      const l = new DOMParser().parseFromString(`<svg xmlns="http://www.w3.org/2000/svg">${n}</svg>`, "image/svg+xml").documentElement, s = Array.from(l.children), a = (o, c, i) => {
         i === "keep" || i === null || i === void 0 || o.setAttribute(c, i === "current" ? "currentColor" : i);
       };
       return s.forEach((o, c) => {
         if (Array.isArray(t))
-          u(o, "fill", t[c]);
+          a(o, "fill", t[c]);
         else if (typeof t == "object" && t !== null) {
           const i = o.getAttribute("id");
-          i && t[i] !== void 0 && u(o, "fill", t[i]);
-        } else t !== void 0 && u(o, "fill", t);
+          i && t[i] !== void 0 && a(o, "fill", t[i]);
+        } else t !== void 0 && a(o, "fill", t);
         if (Array.isArray(r))
-          u(o, "stroke", r[c]);
+          a(o, "stroke", r[c]);
         else if (typeof r == "object" && r !== null) {
           const i = o.getAttribute("id");
-          i && r[i] !== void 0 && u(o, "stroke", r[i]);
-        } else r !== void 0 && u(o, "stroke", r);
+          i && r[i] !== void 0 && a(o, "stroke", r[i]);
+        } else r !== void 0 && a(o, "stroke", r);
       }), l.innerHTML;
     }
     function b() {
@@ -67,35 +67,35 @@ const D = ["viewBox", "innerHTML"], L = /* @__PURE__ */ M({
     ), b(), (n, t) => (A(), x("svg", B({ viewBox: h.value }, v.value, { innerHTML: m.value }), null, 16, D));
   }
 });
-let a = {
+let u = {
   weight: 400,
   theme: "rounded",
   filled: !1,
   debug: j
 };
 function O(g) {
-  a = {
-    ...a,
+  u = {
+    ...u,
     ...g
   };
 }
 const d = P({
   get weight() {
-    return a.weight;
+    return u.weight;
   },
   get theme() {
-    return a.theme;
+    return u.theme;
   },
   get filled() {
-    return a.filled;
+    return u.filled;
   },
   get debug() {
-    return a.debug;
+    return u.debug;
   }
 });
 export {
   L as MaterialSymbol,
-  O as configureSymbolDefaultProps,
-  d as symbolDefaultProps
+  O as configureMaterialSymbolDefaultProps,
+  d as materialSymbolDefaultProps
 };
 //# sourceMappingURL=index.js.map

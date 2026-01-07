@@ -7,7 +7,7 @@ import type { Ref } from 'vue';
 import { computed, ref, watch } from 'vue';
 import type { Filled, IconKey, OpticalSize, Theme, Weight } from '@hyrioo/vite-plugin-material-symbols-svg/consumer';
 import { getSymbol } from '@hyrioo/vite-plugin-material-symbols-svg/consumer';
-import { symbolDefaultProps } from './index';
+import { materialSymbolDefaultProps } from './index';
 
 export type SvgColor = string | 'current' | 'keep' | null;
 
@@ -23,9 +23,9 @@ export interface MaterialSymbolProps {
 }
 
 const props = withDefaults(defineProps<MaterialSymbolProps>(), {
-    weight: () => symbolDefaultProps.weight,
-    theme: () => symbolDefaultProps.theme,
-    filled: () => symbolDefaultProps.filled,
+    weight: () => materialSymbolDefaultProps.weight,
+    theme: () => materialSymbolDefaultProps.theme,
+    filled: () => materialSymbolDefaultProps.filled,
     fills: 'current',
     strokes: null,
     size: 24,
@@ -129,7 +129,7 @@ function updateIcon() {
 
     content.value = '';
 
-    if (symbolDefaultProps.debug) {
+    if (materialSymbolDefaultProps.debug) {
         // eslint-disable-next-line no-console
         console.warn(`[material-symbol] Icon not found: ${String(props.icon)} (size ${props.size})`);
     }

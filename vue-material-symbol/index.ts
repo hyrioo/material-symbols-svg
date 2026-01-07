@@ -19,7 +19,7 @@ let _defaults: MaterialSymbolDefaultProps = {
     debug: isProduction,
 };
 
-export function configureSymbolDefaultProps(
+export function configureMaterialSymbolDefaultProps(
     overrides: Partial<MaterialSymbolDefaultProps>,
 ) {
     _defaults = {
@@ -28,7 +28,7 @@ export function configureSymbolDefaultProps(
     };
 }
 
-export const symbolDefaultProps = readonly({
+export const materialSymbolDefaultProps = readonly({
     get weight() {
         return _defaults.weight;
     },

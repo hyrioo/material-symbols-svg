@@ -1,13 +1,19 @@
 {
   "private": false,
   "name": "@hyrioo/vite-plugin-material-symbols-svg",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "Vite plugin and registry for Material Symbols SVG icons",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/hyrioo/material-symbols-svg.git",
+    "directory": "vite-plugin-material-symbols-svg"
+  },
   "type": "module",
   "module": "dist/index.js",
   "types": "dist/index.d.ts",
   "files": [
-    "dist",
+    "dist/*",
     "README.md"
   ],
   "exports": {
@@ -23,13 +29,13 @@
   "engines": {
     "node": ">=18"
   },
-  "peerDependencies": {
-    "vite": ">=4.0.0"
-  },
   "scripts": {
     "build": "vite build && yarn build:types",
-    "build:types": "tsc -p tsconfig.build.json",
+    "build:types": "tsc -p tsconfig.build.json --emitDeclarationOnly",
     "dev": "vite build --watch"
+  },
+  "peerDependencies": {
+    "vite": ">=4.0.0"
   },
   "devDependencies": {
     "@types/node": "^20.0.0",

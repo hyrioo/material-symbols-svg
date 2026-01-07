@@ -7,8 +7,8 @@ export interface MaterialSymbolDefaultProps {
     filled: Filled;
     debug: boolean;
 }
-export declare function configureSymbolDefaultProps(overrides: Partial<MaterialSymbolDefaultProps>): void;
-export declare const symbolDefaultProps: {
+export declare function configureMaterialSymbolDefaultProps(overrides: Partial<MaterialSymbolDefaultProps>): void;
+export declare const materialSymbolDefaultProps: {
     readonly weight: Weight;
     readonly theme: Theme;
     readonly filled: boolean;
