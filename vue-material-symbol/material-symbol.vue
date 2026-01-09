@@ -8,16 +8,17 @@ import { computed, ref, watch } from 'vue';
 import type { Filled, IconKey, OpticalSize, Theme, Weight } from '@hyrioo/vite-plugin-material-symbols-svg/consumer';
 import { getSymbol } from '@hyrioo/vite-plugin-material-symbols-svg/consumer';
 import { materialSymbolDefaultProps } from './index';
+import type { SvgColor, ColorProp } from './index';
 
-export type SvgColor = string | 'current' | 'keep' | null;
+export type { SvgColor, ColorProp };
 
 export interface MaterialSymbolProps {
     icon: IconKey;
     weight?: Weight;
     theme?: Theme;
     filled?: Filled;
-    fills?: SvgColor | SvgColor[] | {[key: string]: SvgColor}
-    strokes?: SvgColor | SvgColor[] | {[key: string]: SvgColor}
+    fills?: ColorProp;
+    strokes?: ColorProp;
     size?: number | {width: number, height: number}; // rendered size; used to decide the optical size bucket
     opticalSize?: OpticalSize | null;
 }
@@ -26,8 +27,8 @@ const props = withDefaults(defineProps<MaterialSymbolProps>(), {
     weight: () => materialSymbolDefaultProps.weight,
     theme: () => materialSymbolDefaultProps.theme,
     filled: () => materialSymbolDefaultProps.filled,
-    fills: 'current',
-    strokes: null,
+    fills: () => materialSymbolDefaultProps.fills as any,
+    strokes: () => materialSymbolDefaultProps.strokes as any,
     size: 24,
     opticalSize: null,
 });
@@ -58,7 +59,21 @@ const biggestSize = computed(() => {
     return props.size;
 });
 
-function applyColors(content: string, fills: MaterialSymbolProps['fills'], strokes: MaterialSymbolProps['strokes']): string {
+const resolvedFills = computed(() => {
+    if (typeof props.fills === 'string' && materialSymbolDefaultProps.colorSchemes?.[props.fills]) {
+        return materialSymbolDefaultProps.colorSchemes[props.fills];
+    }
+    return props.fills;
+});
+
+const resolvedStrokes = computed(() => {
+    if (typeof props.strokes === 'string' && materialSymbolDefaultProps.colorSchemes?.[props.strokes]) {
+        return materialSymbolDefaultProps.colorSchemes[props.strokes];
+    }
+    return props.strokes;
+});
+
+function applyColors(content: string, fills: ColorProp | readonly SvgColor[], strokes: ColorProp | readonly SvgColor[]): string {
     if (!content || typeof DOMParser === 'undefined') return content;
 
     const parser = new DOMParser();
@@ -68,7 +83,7 @@ function applyColors(content: string, fills: MaterialSymbolProps['fills'], strok
 
     const applyColor = (el: Element, attr: string, value: any) => {
         if (value === 'keep' || value === null || value === undefined) return;
-        el.setAttribute(attr, value === 'current' ? 'currentColor' : value);
+        el.setAttribute(attr, (value === 'text') ? 'currentColor' : value);
     };
 
     children.forEach((child, index) => {
@@ -121,7 +136,7 @@ function updateIcon() {
 
         const svg = (available as any)[bestSize];
         if (svg) {
-            content.value = applyColors(svg.content, props.fills, props.strokes);
+            content.value = applyColors(svg.content, resolvedFills.value, resolvedStrokes.value);
             viewBox.value = svg.viewBox;
             return;
         }

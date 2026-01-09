@@ -1,16 +1,13 @@
 import type { Filled, IconKey, OpticalSize, Theme, Weight } from '@hyrioo/vite-plugin-material-symbols-svg/consumer';
-export type SvgColor = string | 'current' | 'keep' | null;
+import type { SvgColor, ColorProp } from './index';
+export type { SvgColor, ColorProp };
 export interface MaterialSymbolProps {
     icon: IconKey;
     weight?: Weight;
     theme?: Theme;
     filled?: Filled;
-    fills?: SvgColor | SvgColor[] | {
-        [key: string]: SvgColor;
-    };
-    strokes?: SvgColor | SvgColor[] | {
-        [key: string]: SvgColor;
-    };
+    fills?: ColorProp;
+    strokes?: ColorProp;
     size?: number | {
         width: number;
         height: number;
@@ -21,12 +18,8 @@ declare const _default: import("vue").DefineComponent<MaterialSymbolProps, {}, {
     weight: Weight;
     theme: Theme;
     filled: Filled;
-    fills: SvgColor | SvgColor[] | {
-        [key: string]: SvgColor;
-    };
-    strokes: SvgColor | SvgColor[] | {
-        [key: string]: SvgColor;
-    };
+    fills: ColorProp;
+    strokes: ColorProp;
     size: number | {
         width: number;
         height: number;
