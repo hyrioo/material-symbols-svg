@@ -1,7 +1,7 @@
 import path from "node:path";
 import fs from "node:fs/promises";
-import { s as symbolConfig, n as normalizeNums, a as normalizeFills, b as normalizeThemes, u as unique, k as keyOf, c as customKeyOf, d as configureSymbolConfig } from "./config-Pn2OSTF5.js";
-import { i } from "./config-Pn2OSTF5.js";
+import { s as symbolConfig, n as normalizeNums, a as normalizeFills, b as normalizeThemes, u as unique, k as keyOf, c as customKeyOf, d as configureSymbolConfig } from "./config-DyTfeJ9I.js";
+import { i } from "./config-DyTfeJ9I.js";
 async function exists$1(p) {
   try {
     await fs.access(p);
@@ -71,9 +71,6 @@ async function fetchVersions(ctx, versionsFile, iconsTsFile, options) {
         }
         if (existing !== content) {
           await fs.writeFile(iconsTsFile, content);
-          const now = /* @__PURE__ */ new Date();
-          await fs.utimes(iconsTsFile, now, now).catch(() => {
-          });
         }
       } catch (e) {
         const msg = e instanceof Error ? e.message : String(e);
@@ -196,9 +193,6 @@ async function generateConsumerFiles(ctx, iconsDef, loaderTypesFile, loaderMapFi
     }
     if (existing !== typeContent) {
       await fs.writeFile(loaderTypesFile, typeContent);
-      const now = /* @__PURE__ */ new Date();
-      await fs.utimes(loaderTypesFile, now, now).catch(() => {
-      });
     }
   } catch (e) {
     const msg = e instanceof Error ? e.message : String(e);
@@ -272,9 +266,6 @@ ${mapEntries.join("\n")}
     }
     if (existing !== mapContent) {
       await fs.writeFile(loaderMapFile, mapContent);
-      const now = /* @__PURE__ */ new Date();
-      await fs.utimes(loaderMapFile, now, now).catch(() => {
-      });
     }
   } catch (e) {
     const msg = e instanceof Error ? e.message : String(e);

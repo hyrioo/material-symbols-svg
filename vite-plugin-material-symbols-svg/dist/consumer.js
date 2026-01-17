@@ -1,5 +1,5 @@
-import { k as keyOf, c as customKeyOf, p as parseSvg, s as symbolConfig } from "./config-Pn2OSTF5.js";
-import { d } from "./config-Pn2OSTF5.js";
+import { k as keyOf, c as customKeyOf, p as parseSvg, s as symbolConfig } from "./config-DyTfeJ9I.js";
+import { d } from "./config-DyTfeJ9I.js";
 import RAW_MAP from "./loader-map.js";
 const REGISTRY = /* @__PURE__ */ new Map();
 function getSymbol(k) {

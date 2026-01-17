@@ -1,12 +1,4 @@
-import {
-    type SymbolKey,
-    type SymbolSvg,
-    type Theme,
-    type OpticalSize,
-    type IconConfig,
-    type DefineCustomMap,
-    type DefinedIcons
-} from './types';
+import { type SymbolKey, type SymbolSvg, type Theme } from './types';
 
 export function keyOf(k: SymbolKey): string {
     return `${k.theme}::${k.icon}::${k.filled}::${k.weight}`;
@@ -25,7 +17,7 @@ export function parseSvg(svg: string): SymbolSvg | null {
 
     return {
         viewBox: viewBoxMatch[1],
-        content: contentMatch[1].trim()
+        content: contentMatch[1].trim(),
     };
 }
 

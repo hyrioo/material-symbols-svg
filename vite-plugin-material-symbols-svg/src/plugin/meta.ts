@@ -87,8 +87,6 @@ export async function fetchVersions(ctx: PluginContext, versionsFile: string, ic
 
                 if (existing !== content) {
                     await fs.writeFile(iconsTsFile, content);
-                    const now = new Date();
-                    await fs.utimes(iconsTsFile, now, now).catch(() => { });
                 }
             } catch (e) {
                 // non-fatal

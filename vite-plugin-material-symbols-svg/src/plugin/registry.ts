@@ -83,9 +83,6 @@ export async function generateConsumerFiles(
 
         if (existing !== typeContent) {
             await fs.writeFile(loaderTypesFile, typeContent);
-            const now = new Date();
-            await fs.utimes(loaderTypesFile, now, now).catch(() => {
-            });
         }
     } catch (e) {
         const msg = e instanceof Error ? e.message : String(e);
@@ -164,9 +161,6 @@ export async function generateConsumerFiles(
 
         if (existing !== mapContent) {
             await fs.writeFile(loaderMapFile, mapContent);
-            const now = new Date();
-            await fs.utimes(loaderMapFile, now, now).catch(() => {
-            });
         }
     } catch (e) {
         const msg = e instanceof Error ? e.message : String(e);

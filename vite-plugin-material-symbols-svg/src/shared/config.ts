@@ -1,5 +1,3 @@
-import { readonly } from 'vue';
-
 export const isProduction = typeof import.meta !== 'undefined' && import.meta.env && import.meta.env.MODE === 'production';
 
 export interface SymbolConfig {
@@ -17,8 +15,8 @@ export function configureSymbolConfig(overrides: Partial<SymbolConfig>) {
     };
 }
 
-export const symbolConfig: SymbolConfig = readonly({
+export const symbolConfig: SymbolConfig = {
     get debug() {
         return _config.debug;
     },
-});
+};
