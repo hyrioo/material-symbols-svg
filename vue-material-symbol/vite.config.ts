@@ -17,14 +17,31 @@ export default defineConfig({
   ],
   build: {
     lib: {
-      entry: 'index.ts',
+      entry: {
+        index: 'index.ts',
+        consumer: 'consumer.ts',
+        tooling: 'tooling.ts',
+        'loader-map': 'src/consumer/loader-map.js',
+      },
       name: 'VueMaterialSymbol',
       formats: ['es'],
-      fileName: () => 'index.js',
+      fileName: (format, entryName) => {
+        if (entryName === 'loader-map') {
+          return format === 'es' ? 'loader-map.js' : 'loader-map.cjs';
+        }
+
+        return `${entryName}.${format === 'es' ? 'js' : 'cjs'}`;
+      },
     },
     rollupOptions: {
-      // Do not bundle Vue or the plugin package
-      external: ['vue', /^@hyrioo\/vite-plugin-material-symbols-svg(\/.*)?$/],
+      external: [
+        'vue',
+        'node:fs',
+        'node:fs/promises',
+        'node:path',
+        'fs',
+        'path',
+      ],
       output: {
         globals: {
           vue: 'Vue',

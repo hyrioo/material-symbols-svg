@@ -33,7 +33,23 @@ node_modules/
 .pnp.*
 .pnpm-store/
 **/.pnpm-store/
+.yarn/*
+!.yarn/releases
+!.yarn/plugins
+!.yarn/sdks
+!.yarn/versions
 
+###############################
+# Package artifacts
+###############################
+*.tgz
+
+###############################
+# VitePress
+###############################
+docs/.vitepress/cache/
+docs/.vitepress/dist/
+docs/.vitepress/.temp/
 
 ###############################
 # Caches

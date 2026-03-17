@@ -8,9 +8,15 @@
     "vue-material-symbol"
   ],
   "scripts": {
-    "build": "lerna exec --parallel -- yarn build"
+    "build": "lerna run build --stream --sort",
+    "test": "lerna run test --stream",
+    "pack:packages": "lerna run mpack --stream --sort",
+    "docs:dev": "vitepress dev docs --host 0.0.0.0",
+    "docs:build": "vitepress build docs",
+    "docs:preview": "vitepress preview docs"
   },
   "devDependencies": {
-    "lerna": "^9.0.3"
+    "lerna": "^9.0.3",
+    "vitepress": "2.0.0-alpha.16"
   }
 }

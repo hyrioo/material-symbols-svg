@@ -1,5 +1,4 @@
 {
-  "private": false,
   "name": "@hyrioo/vue-material-symbol",
   "version": "0.1.2",
   "description": "Vue 3 component for Material Symbols SVG icons",
@@ -12,28 +11,48 @@
   "type": "module",
   "module": "dist/index.js",
   "types": "dist/index.d.ts",
+  "bin": {
+    "material-symbols": "./bin/download-icons.mjs"
+  },
   "files": [
-    "dist/*",
+    "dist/**/*",
+    "bin/*",
     "README.md"
   ],
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js"
+    },
+    "./consumer": {
+      "types": "./dist/consumer.d.ts",
+      "import": "./dist/consumer.js"
+    },
+    "./tooling": {
+      "types": "./dist/tooling.d.ts",
+      "import": "./dist/tooling.js"
+    }
+  },
   "engines": {
     "node": ">=18"
   },
   "scripts": {
     "build": "vite build && yarn build:types",
     "build:types": "vue-tsc -p tsconfig.build.json --emitDeclarationOnly",
-    "dev": "vite build --watch"
+    "dev": "vite build --watch",
+    "test": "vitest run",
+    "mpack": "yarn pack --filename hyrioo-vue-material-symbol.tgz"
   },
   "peerDependencies": {
-    "vue": "^3.5.0",
-    "@hyrioo/vite-plugin-material-symbols-svg": "^0.1.0"
+    "vue": "^3.5.0"
   },
   "devDependencies": {
     "@types/node": "^22.0.0",
     "@vitejs/plugin-vue": "^6.0.0",
-    "vite-plugin-static-copy": "^3.0.0",
     "typescript": "^5.7.0",
     "vite": "^6.0.0",
+    "vite-plugin-static-copy": "^3.0.0",
+    "vitest": "^2.1.9",
     "vue": "^3.5.0",
     "vue-tsc": "^2.1.0"
   }

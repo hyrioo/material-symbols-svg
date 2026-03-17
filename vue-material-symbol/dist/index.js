@@ -1,119 +1,114 @@
-import { defineComponent as M, ref as w, computed as g, watch as _, createElementBlock as A, openBlock as B, mergeProps as P, readonly as j } from "vue";
-import { isProduction as C } from "@hyrioo/vite-plugin-material-symbols-svg";
-import { getSymbol as D } from "@hyrioo/vite-plugin-material-symbols-svg/consumer";
-const E = ["viewBox", "innerHTML"], T = /* @__PURE__ */ M({
+import { defineComponent as E, ref as x, computed as u, watch as I, openBlock as j, createElementBlock as F, mergeProps as H, readonly as L } from "vue";
+import { getSymbol as O } from "./consumer.js";
+import { s as T, a as N } from "./config-BZ8XTVRl.js";
+const $ = ["viewBox", "innerHTML"], K = /* @__PURE__ */ E({
   __name: "material-symbol",
   props: {
     icon: {},
-    weight: { default: () => l.weight },
-    theme: { default: () => l.theme },
-    filled: { type: Boolean, default: () => l.filled },
-    fills: { default: () => l.fills },
-    strokes: { default: () => l.strokes },
+    weight: { default: () => a.weight },
+    theme: { default: () => a.theme },
+    filled: { type: Boolean, default: () => a.filled },
+    fills: { default: () => a.fills },
+    strokes: { default: () => a.strokes },
     size: { default: 24 },
     opticalSize: { default: null }
   },
-  setup(d) {
-    const e = d, h = w(""), b = w("0 0 24 24"), y = g(() => typeof e.size == "object" ? {
-      width: e.size.width,
-      height: e.size.height
-    } : {
-      width: e.size,
-      height: e.size
-    }), S = g(() => typeof e.size == "object" ? Math.max(e.size.height, e.size.width) : e.size), z = g(() => {
-      var t;
-      return typeof e.fills == "string" && ((t = l.colorSchemes) != null && t[e.fills]) ? l.colorSchemes[e.fills] : e.fills;
-    }), k = g(() => {
-      var t;
-      return typeof e.strokes == "string" && ((t = l.colorSchemes) != null && t[e.strokes]) ? l.colorSchemes[e.strokes] : e.strokes;
-    });
-    function x(t, r, i) {
-      if (!t || typeof DOMParser > "u") return t;
-      const u = new DOMParser().parseFromString(`<svg xmlns="http://www.w3.org/2000/svg">${t}</svg>`, "image/svg+xml").documentElement, a = Array.from(u.children), c = (s, m, o) => {
-        o === "keep" || o === null || o === void 0 || s.setAttribute(m, o === "text" ? "currentColor" : o);
-      };
-      return a.forEach((s, m) => {
-        if (Array.isArray(r))
-          c(s, "fill", r[m]);
-        else if (typeof r == "object" && r !== null) {
-          const o = s.getAttribute("id");
-          o && r[o] !== void 0 && c(s, "fill", r[o]);
-        } else r !== void 0 && c(s, "fill", r);
-        if (Array.isArray(i))
-          c(s, "stroke", i[m]);
-        else if (typeof i == "object" && i !== null) {
-          const o = s.getAttribute("id");
-          o && i[o] !== void 0 && c(s, "stroke", i[o]);
-        } else i !== void 0 && c(s, "stroke", i);
-      }), u.innerHTML;
+  setup(g) {
+    const t = g, p = x(""), b = x("0 0 24 24"), d = u(() => typeof t.size == "object" ? t.size : { width: t.size, height: t.size }), M = u(() => ({ width: d.value.width, height: d.value.height })), C = u(() => Math.max(d.value.height, d.value.width));
+    function S(e) {
+      var o;
+      return typeof e == "string" && ((o = a.colorSchemes) != null && o[e]) ? a.colorSchemes[e] : e;
     }
-    function v() {
-      const t = D({
-        icon: String(e.icon),
-        theme: e.theme,
-        filled: e.filled ? 1 : 0,
-        weight: Number(e.weight)
+    const _ = u(() => S(t.fills)), A = u(() => S(t.strokes));
+    function B(e) {
+      return typeof e == "object" && e !== null && !Array.isArray(e);
+    }
+    function P(e) {
+      return typeof e == "string" || e === null;
+    }
+    function D(e, o, m) {
+      if (!e || typeof DOMParser > "u") return e;
+      const l = new DOMParser().parseFromString(`<svg xmlns="http://www.w3.org/2000/svg">${e}</svg>`, "image/svg+xml").documentElement, c = Array.from(l.children), y = (r, f, s) => {
+        s === "keep" || s === null || s === void 0 || r.setAttribute(f, s === "text" ? "currentColor" : s);
+      }, z = (r, f, s, n) => {
+        if (Array.isArray(n)) {
+          y(r, s, n[f]);
+          return;
+        }
+        if (B(n)) {
+          const w = r.getAttribute("id");
+          w && n[w] !== void 0 && y(r, s, n[w]);
+          return;
+        }
+        P(n) && y(r, s, n);
+      };
+      return c.forEach((r, f) => {
+        z(r, f, "fill", o), z(r, f, "stroke", m);
+      }), l.innerHTML;
+    }
+    function k() {
+      const e = O({
+        icon: String(t.icon),
+        theme: t.theme,
+        filled: t.filled ? 1 : 0,
+        weight: Number(t.weight)
       });
-      if (t) {
-        const r = e.opticalSize || S.value, i = Object.keys(t).map(Number).sort((u, a) => u - a);
-        let p = r;
-        !t[r] && i.length > 0 && (p = i.reduce((u, a) => Math.abs(a - r) < Math.abs(u - r) ? a : u));
-        const f = t[p];
-        if (f) {
-          h.value = x(f.content, z.value, k.value), b.value = f.viewBox;
+      if (e) {
+        const o = t.opticalSize || C.value, m = Object.keys(e).map(Number).sort((l, c) => l - c);
+        let v = o;
+        !e[o] && m.length > 0 && (v = m.reduce((l, c) => Math.abs(c - o) < Math.abs(l - o) ? c : l));
+        const h = e[v];
+        if (h) {
+          p.value = D(h.content, _.value, A.value), b.value = h.viewBox;
           return;
         }
       }
-      h.value = "", l.debug && console.warn(`[material-symbol] Icon not found: ${String(e.icon)} (size ${e.size})`);
+      p.value = "", T(N.diagnostics) && console.warn(
+        `[vue-material-symbol] Icon "${String(t.icon)}" could not be rendered. Fix: verify defineIcons() includes this icon and requested variant.`
+      );
     }
-    return _(
-      () => [e.icon, e.theme, e.filled, e.weight, e.size, e.fills, e.strokes],
-      () => v(),
-      { deep: !0 }
-    ), v(), (t, r) => (B(), A("svg", P({ viewBox: b.value }, y.value, { innerHTML: h.value }), null, 16, E));
+    return I(() => [t.icon, t.theme, t.filled, t.weight, t.size, t.fills, t.strokes], () => k(), {
+      deep: !0
+    }), k(), (e, o) => (j(), F("svg", H({ viewBox: b.value }, M.value, { innerHTML: p.value }), null, 16, $));
   }
 });
-let n = {
+let i = {
   weight: 400,
   theme: "rounded",
   filled: !1,
   fills: "text",
   strokes: null,
-  debug: C,
   colorSchemes: {}
 };
-function $(d) {
-  n = {
-    ...n,
-    ...d
+function Q(g) {
+  i = {
+    ...i,
+    ...g
   };
 }
-const l = j({
+const a = L({
   get weight() {
-    return n.weight;
+    return i.weight;
   },
   get theme() {
-    return n.theme;
+    return i.theme;
   },
   get filled() {
-    return n.filled;
+    return i.filled;
   },
   get fills() {
-    return n.fills;
+    return i.fills;
   },
   get strokes() {
-    return n.strokes;
-  },
-  get debug() {
-    return n.debug;
+    return i.strokes;
   },
   get colorSchemes() {
-    return n.colorSchemes;
+    return i.colorSchemes;
   }
 });
 export {
-  T as MaterialSymbol,
-  $ as configureMaterialSymbolDefaultProps,
-  l as materialSymbolDefaultProps
+  K as MaterialSymbol,
+  Q as configureMaterialSymbolDefaultProps,
+  a as materialSymbolDefaultProps
 };
 //# sourceMappingURL=index.js.map

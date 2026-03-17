@@ -3,7 +3,7 @@
     "target": "ESNext",
     "module": "ESNext",
     "moduleResolution": "Bundler",
-    "types": ["vite/client"],
+    "types": ["vite/client", "node"],
     "declaration": true,
     "emitDeclarationOnly": true,
     "declarationDir": "dist",
@@ -15,5 +15,12 @@
     "jsx": "preserve"
   },
   "include": ["./**/*.ts", "./**/*.vue"],
-  "exclude": ["dist", "node_modules"]
+  "exclude": [
+    "dist",
+    "node_modules",
+    "vite.config.ts",
+    "vitest.config.ts",
+    "**/*.test.ts",
+    "**/__tests__/**"
+  ]
 }
