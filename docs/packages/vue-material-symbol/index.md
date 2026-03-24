@@ -27,6 +27,17 @@ Use one of these sync paths:
 1. Vite plugin flow: add `materialSymbolsSvg({ iconsFile: 'src/icons.ts' })` in `vite.config.ts`.
 2. Manual flow: run `download` and optionally `cleanup` from the installation guide.
 
+```vue
+<!-- AnyComponent.vue -->
+<script setup lang="ts">
+import { MaterialSymbol } from '@hyrioo/vue-material-symbol';
+</script>
+
+<template>
+  <material-symbol icon="folder" :size="24" fills="text" />
+</template>
+```
+
 ```ts
 // main.ts
 import { configureMaterialSymbolDefaultProps } from '@hyrioo/vue-material-symbol';
@@ -35,12 +46,6 @@ configureMaterialSymbolDefaultProps({
   weight: 400,
   theme: 'rounded',
 });
-```
-
-```vue
-<template>
-  <material-symbol icon="folder" :size="24" fills="text" />
-</template>
 ```
 
 Next steps:

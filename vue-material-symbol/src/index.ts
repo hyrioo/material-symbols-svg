@@ -3,7 +3,7 @@ import type { Filled, Theme, Weight } from './shared/types';
 
 export { default as MaterialSymbol } from './material-symbol.vue';
 export type { MaterialSymbolProps } from './material-symbol.vue';
-export type { MaterialSymbolIcon } from './shared/icon-types';
+export type { IconKey, MaterialSymbolIcon } from './shared/icon-types';
 
 export type SvgColor = string | 'text' | 'keep' | null;
 export type ColorProp = SvgColor | readonly SvgColor[] | Readonly<Record<string, SvgColor>>;

@@ -1,7 +1,7 @@
 {
   "name": "@hyrioo/vite-plugin-material-symbols-svg",
-  "version": "0.1.3",
-  "description": "Vite plugin and registry for Material Symbols SVG icons",
+  "version": "0.2.0",
+  "description": "Vite plugin for Material Symbols SVG icons",
   "license": "MIT",
   "repository": {
     "type": "git",
@@ -32,14 +32,14 @@
     "mpack": "yarn pack --filename hyrioo-vite-plugin-material-symbols-svg.tgz"
   },
   "peerDependencies": {
-    "@hyrioo/vue-material-symbol": "^0.1.2",
+    "@hyrioo/vue-material-symbol": "^0.2.0",
     "vite": ">=4.0.0"
   },
   "dependencies": {
     "esbuild": "^0.25.10"
   },
   "devDependencies": {
-    "@hyrioo/vue-material-symbol": "^0.1.2",
+    "@hyrioo/vue-material-symbol": "^0.2.0",
     "@types/node": "^22.0.0",
     "typescript": "^5.7.0",
     "vite": "^6.0.0",

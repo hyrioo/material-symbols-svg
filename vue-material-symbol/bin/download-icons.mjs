@@ -142,13 +142,6 @@ async function main() {
     rootDir: args.root,
     strict: args.strict,
     concurrency: args.concurrency,
-    logger: {
-      info: (msg) => console.log(msg),
-      warn: (msg) => console.warn(msg),
-      error: (msg) => {
-        throw new Error(msg);
-      },
-    },
   });
 
   if (result.failed > 0 && args.strict) {

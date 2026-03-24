@@ -1,6 +1,6 @@
 import path from 'node:path';
 import type { Plugin } from 'vite';
-import { syncMaterialSymbols, type DiagnosticsMode } from '@hyrioo/vue-material-symbol/tooling';
+import { syncMaterialSymbolsInternal, type DiagnosticsMode } from '@hyrioo/vue-material-symbol/tooling';
 import { loadIconsDefinition } from './icons-definition';
 import { styleError, styleInfo, styleWarn } from './logger';
 import {
@@ -47,18 +47,14 @@ export function materialSymbolsSvg(opts: MaterialSymbolsPluginOptions): Plugin {
     watchedIconFiles = new Set(Array.from(watchedFiles, (file) => path.resolve(file)));
     const before = loaderMapSource;
 
-    await syncMaterialSymbols(iconsDef, {
+    const result = await syncMaterialSymbolsInternal(iconsDef, {
       rootDir: root,
       concurrency: options.concurrency,
       strict: options.strict,
-      enabled: options.enabled,
       diagnostics: options.diagnostics,
-      virtualLoaderMap: true,
-      onLoaderMapGenerated: (source: string) => {
-        loaderMapSource = ensureDefaultExport(source);
-      },
       logger,
     });
+    loaderMapSource = ensureDefaultExport(result.loaderMapSource);
 
     return loaderMapSource !== before;
   }

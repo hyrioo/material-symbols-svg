@@ -2,15 +2,15 @@ import { afterEach, describe, expect, it, vi } from 'vitest';
 import path from 'node:path';
 import fs from 'node:fs/promises';
 
-const { syncMaterialSymbols } = vi.hoisted(() => ({
-  syncMaterialSymbols: vi.fn(async () => ({ saved: 1, skipped: 0, failed: 0 })),
+const { syncMaterialSymbolsInternal } = vi.hoisted(() => ({
+  syncMaterialSymbolsInternal: vi.fn(async () => ({ saved: 1, skipped: 0, failed: 0, loaderMapSource: 'export default {};' })),
 }));
 
 vi.mock('@hyrioo/vue-material-symbol/tooling', async (importOriginal) => {
   const actual = await importOriginal<typeof import('@hyrioo/vue-material-symbol/tooling')>();
   return {
     ...actual,
-    syncMaterialSymbols,
+    syncMaterialSymbolsInternal,
   };
 });
 
@@ -20,7 +20,7 @@ const tempDirs: string[] = [];
 
 afterEach(async () => {
   await Promise.all(tempDirs.splice(0).map((dir) => fs.rm(dir, { recursive: true, force: true })));
-  syncMaterialSymbols.mockClear();
+  syncMaterialSymbolsInternal.mockClear();
 });
 
 async function createIconsFile(root: string, relPath = 'icons.mjs', content?: string) {
@@ -60,13 +60,13 @@ describe('materialSymbolsSvg plugin', () => {
     expect(cfg.optimizeDeps.exclude).toEqual(
       expect.arrayContaining([
         'some-other-dep',
-        '@hyrioo/vue-material-symbol',
+        '@hyrioo/vue-material-symbol/tooling',
         '@hyrioo/vue-material-symbol/consumer',
       ]),
     );
   });
 
-  it('triggers syncMaterialSymbols in buildStart using default export from iconsFile', async () => {
+  it('triggers internal sync adapter in buildStart using default export from iconsFile', async () => {
     const root = await fs.mkdtemp(path.join(process.cwd(), '.tmp-mss-plugin-'));
     tempDirs.push(root);
     await createIconsFile(root);
@@ -85,14 +85,12 @@ describe('materialSymbolsSvg plugin', () => {
 
     await plugin.buildStart?.call(ctx as any);
 
-    expect(syncMaterialSymbols).toHaveBeenCalledTimes(1);
-    const [icons, opts] = syncMaterialSymbols.mock.calls[0];
+    expect(syncMaterialSymbolsInternal).toHaveBeenCalledTimes(1);
+    const [icons, opts] = syncMaterialSymbolsInternal.mock.calls[0];
     expect(icons.Symbols.home).toBeDefined();
     expect(opts.rootDir).toBe(root);
     expect(opts.strict).toBe(true);
     expect(opts.diagnostics).toBe('dev');
-    expect(opts.virtualLoaderMap).toBe(true);
-    expect(typeof opts.onLoaderMapGenerated).toBe('function');
     expect(ctx.addWatchFile).toHaveBeenCalledWith(path.join(root, 'icons.mjs'));
   });
 
@@ -124,7 +122,7 @@ describe('materialSymbolsSvg plugin', () => {
       "import { defineIcons } from '@hyrioo/vue-material-symbol/tooling';\n" +
         'export default defineIcons(\n' +
         "  { home: { sizes: [24], weights: [400], fills: [false], themes: ['rounded'] } },\n" +
-        "  { spark: { 24: { __hyriooSvgFile: './custom/spark.svg' } } },\n" +
+        "  { spark: { 24: import('./custom/spark.svg') } },\n" +
         "  { sizes: [24], weights: [400], fills: [false], themes: ['rounded'] },\n" +
         ');',
     );
@@ -134,9 +132,9 @@ describe('materialSymbolsSvg plugin', () => {
     const addWatchFile = vi.fn();
     await plugin.buildStart?.call({ info: vi.fn(), warn: vi.fn(), error: vi.fn(), addWatchFile } as any);
 
-    expect(syncMaterialSymbols).toHaveBeenCalledTimes(1);
-    const [icons] = syncMaterialSymbols.mock.calls[0];
-    expect(icons.Custom.spark[24]).toEqual({ __hyriooSvgFile: './custom/spark.svg' });
+    expect(syncMaterialSymbolsInternal).toHaveBeenCalledTimes(1);
+    const [icons] = syncMaterialSymbolsInternal.mock.calls[0];
+    expect(typeof icons.Custom.spark[24]?.then).toBe('function');
     expect(addWatchFile).toHaveBeenCalledWith(path.join(root, 'custom', 'spark.svg'));
   });
 
@@ -170,9 +168,8 @@ describe('materialSymbolsSvg plugin', () => {
   });
 
   it('falls back to default export when generated loader map source is invalid', async () => {
-    syncMaterialSymbols.mockImplementationOnce(async (_icons: unknown, opts: any) => {
-      opts.onLoaderMapGenerated?.('export const namedOnly = 1;');
-      return { saved: 1, skipped: 0, failed: 0 };
+    syncMaterialSymbolsInternal.mockImplementationOnce(async () => {
+      return { saved: 1, skipped: 0, failed: 0, loaderMapSource: 'export const namedOnly = 1;' };
     });
 
     const root = await fs.mkdtemp(path.join(process.cwd(), '.tmp-mss-plugin-invalid-loader-map-source-'));
@@ -225,7 +222,7 @@ describe('materialSymbolsSvg plugin', () => {
 
     await plugin.buildStart?.call({ info: vi.fn(), warn: vi.fn(), error: vi.fn(), addWatchFile: vi.fn() } as any);
 
-    expect(syncMaterialSymbols).not.toHaveBeenCalled();
+    expect(syncMaterialSymbolsInternal).not.toHaveBeenCalled();
   });
 
   it('resyncs and invalidates virtual module when icons definition file changes and loader map changes', async () => {
@@ -252,12 +249,11 @@ describe('materialSymbolsSvg plugin', () => {
       addWatchFile: vi.fn(),
     } as any);
 
-    expect(syncMaterialSymbols).toHaveBeenCalledTimes(1);
+    expect(syncMaterialSymbolsInternal).toHaveBeenCalledTimes(1);
 
     let generation = 1;
-    syncMaterialSymbols.mockImplementation(async (_icons: unknown, opts: any) => {
-      opts.onLoaderMapGenerated?.(`export default {'g': ${generation++}};`);
-      return { saved: 1, skipped: 0, failed: 0 };
+    syncMaterialSymbolsInternal.mockImplementation(async () => {
+      return { saved: 1, skipped: 0, failed: 0, loaderMapSource: `export default {'g': ${generation++}};` };
     });
 
     const invalidateModule = vi.fn();
@@ -278,7 +274,7 @@ describe('materialSymbolsSvg plugin', () => {
       },
     } as any);
 
-    expect(syncMaterialSymbols).toHaveBeenCalledTimes(2);
+    expect(syncMaterialSymbolsInternal).toHaveBeenCalledTimes(2);
     expect(getModuleById).toHaveBeenCalled();
     expect(invalidateModule).toHaveBeenCalled();
     expect(res).toEqual([{ id: '\u0000virtual:material-symbols-loader-map' }]);
@@ -296,9 +292,8 @@ describe('materialSymbolsSvg plugin', () => {
       'utf8',
     );
 
-    syncMaterialSymbols.mockImplementation(async (_icons: unknown, opts: any) => {
-      opts.onLoaderMapGenerated?.("export default {'stable': 1};");
-      return { saved: 1, skipped: 0, failed: 0 };
+    syncMaterialSymbolsInternal.mockImplementation(async () => {
+      return { saved: 1, skipped: 0, failed: 0, loaderMapSource: "export default {'stable': 1};" };
     });
 
     const plugin = materialSymbolsSvg({ iconsFile: 'icons.mjs' });
@@ -324,13 +319,13 @@ describe('materialSymbolsSvg plugin', () => {
       },
     } as any);
 
-    expect(syncMaterialSymbols).toHaveBeenCalledTimes(2);
+    expect(syncMaterialSymbolsInternal).toHaveBeenCalledTimes(2);
     expect(getModuleById).not.toHaveBeenCalled();
     expect(invalidateModule).not.toHaveBeenCalled();
     expect(res).toEqual([]);
   });
 
-  it('passes diagnostics option through to syncMaterialSymbols', async () => {
+  it('passes diagnostics option through to internal sync adapter', async () => {
     const root = await fs.mkdtemp(path.join(process.cwd(), '.tmp-mss-plugin-diagnostics-'));
     tempDirs.push(root);
     await createIconsFile(root);
@@ -340,8 +335,8 @@ describe('materialSymbolsSvg plugin', () => {
 
     await plugin.buildStart?.call({ info: vi.fn(), warn: vi.fn(), error: vi.fn(), addWatchFile: vi.fn() } as any);
 
-    expect(syncMaterialSymbols).toHaveBeenCalledTimes(1);
-    const [, opts] = syncMaterialSymbols.mock.calls[0];
+    expect(syncMaterialSymbolsInternal).toHaveBeenCalledTimes(1);
+    const [, opts] = syncMaterialSymbolsInternal.mock.calls[0];
     expect(opts.diagnostics).toBe('off');
   });
 });

@@ -23,12 +23,9 @@ export type DefinedIcons = {
     Custom?: Record<string, any>;
     Default?: Partial<IconConfig>;
 };
-export interface SvgFileSource {
-    __hyriooSvgFile: string;
-}
 export type DefineCustomSource = string | {
     default: string;
-} | SvgFileSource | Promise<string | {
+} | Promise<string | {
     default: string;
-} | SvgFileSource>;
+}>;
 export type DefineCustomMap = Record<string, Partial<Readonly<Record<OpticalSize, DefineCustomSource>>>>;

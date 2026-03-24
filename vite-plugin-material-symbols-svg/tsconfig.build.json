@@ -15,5 +15,12 @@
     "types": ["vite/client", "node"]
   },
   "include": ["./**/*.ts"],
-  "exclude": ["dist", "node_modules", "**/*.test.ts", "**/__tests__/**"]
+  "exclude": [
+    "dist",
+    "node_modules",
+    "vite.config.ts",
+    "vitest.config.ts",
+    "**/*.test.ts",
+    "**/__tests__/**"
+  ]
 }

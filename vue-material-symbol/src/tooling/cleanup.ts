@@ -1,9 +1,8 @@
 import path from 'node:path';
 import fs from 'node:fs/promises';
-import { type ToolingLogger } from './meta';
-import { toFilename } from './symbols';
-import { IconDefaultConfig, type IconConfig, type DefinedIcons } from './registry';
-import { normalizeFills, normalizeNums, normalizeThemes, unique } from '../shared/utils';
+import type { DefinedIcons } from './registry';
+import { buildSymbolVariantMatrix } from './core/matrix';
+import { defaultLogger, exists, resolveToolingPaths, type ToolingLogger } from './core/fs-download';
 
 export interface CleanupMaterialSymbolsOptions {
   rootDir?: string;
@@ -16,25 +15,6 @@ export interface CleanupMaterialSymbolsResult {
   keptFiles: number;
   scannedFiles: number;
   symbolsPath: string;
-}
-
-function defaultLogger(): ToolingLogger {
-  return {
-    info: (msg: string) => console.info(msg),
-    warn: (msg: string) => console.warn(msg),
-    error: (msg: string) => {
-      throw new Error(msg);
-    },
-  };
-}
-
-async function exists(p: string): Promise<boolean> {
-  try {
-    await fs.access(p);
-    return true;
-  } catch {
-    return false;
-  }
 }
 
 async function listFilesRecursive(dir: string): Promise<string[]> {
@@ -72,31 +52,6 @@ async function removeEmptyDirsRecursive(dir: string): Promise<boolean> {
   return false;
 }
 
-function buildDesiredRelativeFiles(iconsDef: DefinedIcons): Set<string> {
-  const desired = new Set<string>();
-  const iconsMap = iconsDef.Symbols;
-  const defaults: Partial<IconConfig> = iconsDef.Default ?? {};
-
-  for (const [icon, meta] of Object.entries(iconsMap)) {
-    const sizes = normalizeNums(meta.sizes ?? defaults.sizes, IconDefaultConfig.sizes);
-    const weights = normalizeNums(meta.weights ?? defaults.weights, IconDefaultConfig.weights);
-    const fills = normalizeFills(meta.fills ?? defaults.fills, IconDefaultConfig.fills);
-    const themes = normalizeThemes(meta.themes ?? defaults.themes, IconDefaultConfig.themes);
-
-    for (const theme of unique(themes)) {
-      for (const weight of unique(weights)) {
-        for (const filled of unique(fills)) {
-          for (const size of unique(sizes)) {
-            desired.add(path.join(theme, toFilename(icon, filled as 0 | 1, weight, size)));
-          }
-        }
-      }
-    }
-  }
-
-  return desired;
-}
-
 export async function cleanupMaterialSymbolsCache(
   iconsDef: DefinedIcons,
   opts: CleanupMaterialSymbolsOptions = {},
@@ -108,15 +63,8 @@ export async function cleanupMaterialSymbolsCache(
   const rootDir = opts.rootDir ?? process.cwd();
   const logger = opts.logger ?? defaultLogger();
   const clearAll = opts.clearAll ?? false;
-
-  const symbolsPath = path.resolve(
-    rootDir,
-    'node_modules',
-    '@hyrioo',
-    'vue-material-symbol',
-    '.temp',
-    'symbols',
-  );
+  const paths = resolveToolingPaths(rootDir);
+  const symbolsPath = paths.symbolsDir;
 
   if (!(await exists(symbolsPath))) {
     logger.info(`[vue-material-symbol] Nothing to cleanup at ${symbolsPath}`);
@@ -135,14 +83,14 @@ export async function cleanupMaterialSymbolsCache(
     };
   }
 
-  const desired = buildDesiredRelativeFiles(iconsDef);
+  const desired = new Set(buildSymbolVariantMatrix(iconsDef, symbolsPath).map((row) => row.relativeFile));
   const files = await listFilesRecursive(symbolsPath);
 
   let removedFiles = 0;
   let keptFiles = 0;
 
   for (const file of files) {
-    const rel = path.relative(symbolsPath, file);
+    const rel = path.relative(symbolsPath, file).replace(/\\/g, '/');
     if (desired.has(rel)) {
       keptFiles++;
       continue;
@@ -153,7 +101,7 @@ export async function cleanupMaterialSymbolsCache(
   }
 
   await removeEmptyDirsRecursive(symbolsPath).catch(() => {
-    // best-effort; do not fail cleanup if empty-dir removal races
+    // best-effort
   });
 
   logger.info(

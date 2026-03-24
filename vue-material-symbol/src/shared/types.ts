@@ -28,15 +28,10 @@ export type DefinedIcons = {
   Default?: Partial<IconConfig>;
 };
 
-export interface SvgFileSource {
-  __hyriooSvgFile: string;
-}
-
 export type DefineCustomSource =
   | string
   | { default: string }
-  | SvgFileSource
-  | Promise<string | { default: string } | SvgFileSource>;
+  | Promise<string | { default: string }>;
 
 export type DefineCustomMap = Record<
   string,

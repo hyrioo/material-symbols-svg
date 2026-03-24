@@ -1,5 +1,5 @@
-import { type ToolingLogger } from './meta';
-import { type DefinedIcons } from './registry';
+import type { DefinedIcons } from './registry';
+import { type ToolingLogger } from './core/fs-download';
 export interface CleanupMaterialSymbolsOptions {
     rootDir?: string;
     logger?: ToolingLogger;

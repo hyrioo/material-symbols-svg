@@ -10,7 +10,7 @@ Vite plugin that syncs symbol assets from your `defineIcons(...)` config and wir
 
 ```ts
 // icons.ts
-import { defineIcons, svg } from '@hyrioo/vue-material-symbol/tooling';
+import { defineIcons } from '@hyrioo/vue-material-symbol/tooling';
 
 export default defineIcons(
   {
@@ -19,7 +19,7 @@ export default defineIcons(
     logout: { sizes: [24], weights: [200, 400] },
   },
   {
-    spark: { 24: svg('./custom/spark.svg') },
+    spark: { 24: import('./custom/spark.svg') },
   },
   {
     sizes: [20, 24, 40, 48],

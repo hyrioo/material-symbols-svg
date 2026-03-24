@@ -4,12 +4,14 @@ import fs from 'node:fs/promises';
 import { afterEach, describe, expect, it, vi } from 'vitest';
 import { build } from 'vite';
 
-const { syncMaterialSymbols } = vi.hoisted(() => ({
-  syncMaterialSymbols: vi.fn(async (_icons: unknown, opts: any) => {
-    opts.onLoaderMapGenerated?.(
-      "export default {'rounded::home::0::400': {24: '<svg viewBox=\"0 0 24 24\"><path id=\"a\" /></svg>'}};",
-    );
-    return { saved: 1, skipped: 0, failed: 0 };
+const { syncMaterialSymbolsInternal } = vi.hoisted(() => ({
+  syncMaterialSymbolsInternal: vi.fn(async () => {
+    return {
+      saved: 1,
+      skipped: 0,
+      failed: 0,
+      loaderMapSource: "export default {'rounded::home::0::400': {24: '<svg viewBox=\"0 0 24 24\"><path id=\"a\" /></svg>'}};",
+    };
   }),
 }));
 
@@ -17,7 +19,7 @@ vi.mock('@hyrioo/vue-material-symbol/tooling', async (importOriginal) => {
   const actual = await importOriginal<typeof import('@hyrioo/vue-material-symbol/tooling')>();
   return {
     ...actual,
-    syncMaterialSymbols,
+    syncMaterialSymbolsInternal,
   };
 });
 
@@ -29,7 +31,7 @@ afterEach(async () => {
   await Promise.all(
     tempDirs.splice(0).map((dir) => fs.rm(dir, { recursive: true, force: true })),
   );
-  syncMaterialSymbols.mockClear();
+  syncMaterialSymbolsInternal.mockClear();
 });
 
 describe('virtual loader-map integration', () => {
@@ -74,7 +76,7 @@ describe('virtual loader-map integration', () => {
       },
     });
 
-    expect(syncMaterialSymbols).toHaveBeenCalledTimes(1);
+    expect(syncMaterialSymbolsInternal).toHaveBeenCalledTimes(1);
 
     const codes = (Array.isArray(output) ? output : [output])
       .flatMap((o) => o.output)

@@ -1,38 +1,10 @@
 import path from "node:path";
-import { syncMaterialSymbols } from "@hyrioo/vue-material-symbol/tooling";
+import { syncMaterialSymbolsInternal } from "@hyrioo/vue-material-symbol/tooling";
 import { pathToFileURL } from "node:url";
 import fs from "node:fs/promises";
 import { build } from "esbuild";
-function isSvgFileSource(value) {
-  return Boolean(value && typeof value === "object" && "__hyriooSvgFile" in value);
-}
-function asRecord(value) {
-  return value && typeof value === "object" ? value : null;
-}
-function resolveWatchCandidate(projectRoot, iconsDir, sourcePath) {
-  if (path.isAbsolute(sourcePath)) return path.resolve(sourcePath);
-  return sourcePath.startsWith(".") ? path.resolve(iconsDir, sourcePath) : path.resolve(projectRoot, sourcePath);
-}
-function collectWatchFiles(projectRoot, absIconsFile, iconsDef) {
-  const files = /* @__PURE__ */ new Set([path.resolve(absIconsFile)]);
-  const iconsDir = path.dirname(absIconsFile);
-  const custom = asRecord(iconsDef.Custom);
-  if (!custom) return files;
-  for (const sizeMap of Object.values(custom)) {
-    const sizeRecord = asRecord(sizeMap);
-    if (!sizeRecord) continue;
-    for (const source of Object.values(sizeRecord)) {
-      if (typeof source === "string" && (source.startsWith("./") || source.startsWith("../"))) {
-        files.add(resolveWatchCandidate(projectRoot, iconsDir, source));
-      } else if (isSvgFileSource(source)) {
-        files.add(resolveWatchCandidate(projectRoot, iconsDir, source.__hyriooSvgFile));
-      }
-    }
-  }
-  return files;
-}
 async function importBundledModule(projectRoot, absIconsFile) {
-  var _a, _b;
+  var _a, _b, _c;
   const bundle = await build({
     entryPoints: [absIconsFile],
     absWorkingDir: projectRoot,
@@ -40,6 +12,7 @@ async function importBundledModule(projectRoot, absIconsFile) {
     format: "esm",
     bundle: true,
     write: false,
+    metafile: true,
     target: "node18",
     loader: {
       ".svg": "text"
@@ -50,6 +23,15 @@ async function importBundledModule(projectRoot, absIconsFile) {
   if (!bundled) {
     throw new Error("iconsFile bundling produced no output");
   }
+  const watchedFiles = /* @__PURE__ */ new Set();
+  for (const input of Object.keys(((_c = bundle.metafile) == null ? void 0 : _c.inputs) ?? {})) {
+    const absInput = path.resolve(projectRoot, input);
+    const normalized = absInput.replace(/\\/g, "/");
+    if (!normalized.startsWith(projectRoot.replace(/\\/g, "/"))) continue;
+    if (normalized.includes("/node_modules/")) continue;
+    watchedFiles.add(absInput);
+  }
+  watchedFiles.add(path.resolve(absIconsFile));
   const tmpBase = path.resolve(projectRoot, "node_modules", ".cache", "material-symbols-svg");
   await fs.mkdir(tmpBase, { recursive: true });
   const tmpDir = await fs.mkdtemp(path.join(tmpBase, "icons-"));
@@ -57,7 +39,8 @@ async function importBundledModule(projectRoot, absIconsFile) {
   await fs.writeFile(tmpFile, bundled, "utf8");
   try {
     const href = `${pathToFileURL(tmpFile).href}?t=${Date.now()}`;
-    return await import(href);
+    const mod = await import(href);
+    return { mod, watchedFiles };
   } finally {
     await fs.rm(tmpDir, { recursive: true, force: true });
   }
@@ -66,7 +49,7 @@ async function loadIconsDefinition(root, iconsFile) {
   const projectRoot = root || process.cwd();
   const abs = path.resolve(projectRoot, iconsFile);
   try {
-    const mod = await importBundledModule(projectRoot, abs);
+    const { mod, watchedFiles } = await importBundledModule(projectRoot, abs);
     const iconsDef = mod == null ? void 0 : mod.default;
     if (!iconsDef || !iconsDef.Symbols) {
       throw new Error(
@@ -76,12 +59,13 @@ async function loadIconsDefinition(root, iconsFile) {
     return {
       abs,
       iconsDef,
-      watchedFiles: collectWatchFiles(projectRoot, abs, iconsDef)
+      watchedFiles
     };
   } catch (error) {
     const detail = error instanceof Error ? error.message : String(error);
+    const missingToolingSubpath = detail.includes(`Package subpath './tooling' is not defined by "exports"`) || detail.includes(`Package subpath './tooling' is not defined by 'exports'`);
     const maybeSvgImportIssue = detail.includes('Unknown file extension ".svg"') || detail.includes("ERR_UNKNOWN_FILE_EXTENSION");
-    const hint = maybeSvgImportIssue ? " Fix: use `svg('./path/icon.svg')` from @hyrioo/vue-material-symbol/tooling (or keep .ts wrappers)." : "";
+    const hint = missingToolingSubpath ? " Fix: reinstall/update @hyrioo/vue-material-symbol so it exports `./tooling`." : maybeSvgImportIssue ? " Fix: import SVGs from iconsFile with `import('./path/icon.svg')`, or use .ts wrappers." : "";
     throw new Error(`[material-symbols-svg] Failed to evaluate iconsFile with SVG support.${hint} Details: ${detail}`);
   }
 }
@@ -157,18 +141,14 @@ function materialSymbolsSvg(opts) {
     const { iconsDef, watchedFiles } = await loadIconsDefinition(root || process.cwd(), options.iconsFile);
     watchedIconFiles = new Set(Array.from(watchedFiles, (file) => path.resolve(file)));
     const before = loaderMapSource;
-    await syncMaterialSymbols(iconsDef, {
+    const result = await syncMaterialSymbolsInternal(iconsDef, {
       rootDir: root,
       concurrency: options.concurrency,
       strict: options.strict,
-      enabled: options.enabled,
       diagnostics: options.diagnostics,
-      virtualLoaderMap: true,
-      onLoaderMapGenerated: (source) => {
-        loaderMapSource = ensureDefaultExport(source);
-      },
       logger
     });
+    loaderMapSource = ensureDefaultExport(result.loaderMapSource);
     return loaderMapSource !== before;
   }
   return {

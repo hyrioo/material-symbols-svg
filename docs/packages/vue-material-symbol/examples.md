@@ -5,6 +5,10 @@ Use these examples as copy-paste starting points for common icon rendering patte
 ## Basic icon
 
 ```vue
+<script setup lang="ts">
+import { MaterialSymbol } from '@hyrioo/vue-material-symbol';
+</script>
+
 <template>
   <material-symbol icon="folder" :size="24" fills="text" />
 </template>
@@ -13,7 +17,7 @@ Use these examples as copy-paste starting points for common icon rendering patte
 ## Typed icon name
 
 ```ts
-import type { IconKey } from '@hyrioo/vue-material-symbol/consumer';
+import type { IconKey } from '@hyrioo/vue-material-symbol';
 
 const icon: IconKey = 'home';
 ```
@@ -132,12 +136,12 @@ configureMaterialSymbolDefaultProps({
 
 ```ts
 // icons.ts
-import { defineIcons, svg } from '@hyrioo/vue-material-symbol/tooling';
+import { defineIcons } from '@hyrioo/vue-material-symbol/tooling';
 
 export default defineIcons(
   { home: {} },
   {
-    spark: { 24: svg('./custom/spark.svg') },
+    spark: { 24: import('./custom/spark.svg') },
   },
   { sizes: [24], weights: [400], fills: [false], themes: ['rounded'] },
 );
@@ -154,7 +158,7 @@ export default defineIcons(
 ```vue
 <script setup lang="ts">
 import { computed, ref } from 'vue';
-import type { IconKey } from '@hyrioo/vue-material-symbol/consumer';
+import type { IconKey } from '@hyrioo/vue-material-symbol';
 
 const online = ref(true);
 const icon = computed<IconKey>(() => (online.value ? 'wifi' : 'wifi_off'));
