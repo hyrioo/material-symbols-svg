@@ -3,6 +3,7 @@ import { defineConfig } from 'vitepress';
 export default defineConfig({
     title: 'Material Symbols SVG',
     description: 'Docs for @hyrioo/vite-plugin-material-symbols-svg and @hyrioo/vue-material-symbol',
+    base: '/material-symbols-svg/',
     lastUpdated: true,
     vite: {
         server: {
